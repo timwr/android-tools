@@ -9,15 +9,23 @@ import string
 import shutil
 import xml.parsers.expat
 
+def get_var_name(instring):
+    var_name = ''
+    words = instring.split(' ')
+    for word in words:
+        var_name += word.lower() + '_'
+    return var_name[:-1]
+
 def testlayout(infile):
     def start_element(name, attrs):
         attrib = attrs.get('android:text')
         if attrib == None:
-            continue
+            return
         textvalue = str(attrib)
-        if '@string' == android_text[0:7]:
-            continue
-        print textvalue
+        if '@string' == textvalue[0:7]:
+            return
+        var_name = get_var_name(textvalue)
+        print '<string name="' + var_name + '">' + textvalue + '</string>'
 
     p = xml.parsers.expat.ParserCreate()
     p.StartElementHandler = start_element
