@@ -12,8 +12,13 @@ if len(sys.argv) < 2:
     print "Usage " , sys.argv[0] , " layout.xml";
 else:
     adapter = False
+    view = ''
     if len(sys.argv) == 3:
-        adapter = True
+        if sys.argv[2] == 'adapter':
+            view = 'convertView.'
+            adapter = True
+        else:
+            view = sys.argv[2] + '.'
 
     def start_element(name, attrs):
         global privates
@@ -25,7 +30,8 @@ else:
                 classname = 'View'
             rid = str(attrs.get('android:id'))
             rid = rid[rid.find('/')+1:]
-            rname = ''
+            rname = 'm' + classname
+            addname = ''
             foundunderscore = False
             for i, c in enumerate(rid):
                 if c == '_':
@@ -34,16 +40,17 @@ else:
                     foundunderscore = True
                     i += 1
                 elif foundunderscore:
-                    rname += c.upper()
+                    addname += c.upper()
                     foundunderscore = False
-                else:
-                    rname += c
+                elif len(addname) > 0:
+                    addname += c
+            rname = rname + addname
 
             privates += '' if adapter else 'private ' 
             privates += classname + ' ' +  rname + ';\n'
             lookups += 'holder.' if adapter else '' 
             lookups += rname + ' = (' + classname + ') '
-            lookups += 'convertView.' if adapter else ''
+            lookups += view
             lookups += 'findViewById(R.id.' + rid + ');\n'
             if classname == 'Button':
                 lookups += 'holder.' if adapter else '' 

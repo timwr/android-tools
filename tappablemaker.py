@@ -9,10 +9,9 @@ inputdata = sys.argv
 if len(inputdata) < 2:
     inputdata = sys.stdin.readline().split()
 elif len(inputdata) > 2:
-    outtype = inputdata[2].lower()
-    if outtype == 'checkable':
+    if any('checkable' == s.lower() for s in inputdata):
         checkable = True
-    if outtype == 'bitmap':
+    if any('bitmap' == s.lower() for s in inputdata):
         bitmap = True
     inputdata = inputdata[1:]
 else:
@@ -34,7 +33,7 @@ else:
     newfile.write( '<item android:state_pressed="true" android:drawable="@drawable/' + drawable + '_pressed"/>\n')
     if checkable:
         newfile.write( '<item android:state_checked="true" android:drawable="@drawable/' + drawable + '_selected"/>\n')
-    newfile.write( '<item android:drawable="@drawable/' + drawable + '_default"/>\n')
+    newfile.write( '<item android:drawable="@drawable/' + drawable + '_normal"/>\n')
 newfile.write( '</selector>\n')
 newfile.close()
 
