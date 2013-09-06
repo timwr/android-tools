@@ -10,8 +10,7 @@ def printitem(inputstring):
     name = filter(lambda x: x in (string.lowercase + '_'), name)
     if len(inputstring) == 0:
         return
-    if inputstring[0] == ' ':
-        inputstring = '"' + inputstring + '"'
+    inputstring = '"' + inputstring + '"'
     
     print '<string name="' + name + '">' + escape(inputstring) + '</string>'
 

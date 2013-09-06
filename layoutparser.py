@@ -12,13 +12,16 @@ if len(sys.argv) < 2:
     print "Usage " , sys.argv[0] , " layout.xml";
 else:
     adapter = False
+    private = True
     view = ''
-    if len(sys.argv) == 3:
+    if len(sys.argv) > 2:
         if sys.argv[2] == 'adapter':
             view = 'convertView.'
             adapter = True
         else:
             view = sys.argv[2] + '.'
+            if len(sys.argv) > 3:
+                private = False
 
     def start_element(name, attrs):
         global privates
@@ -49,6 +52,8 @@ else:
             privates += '' if adapter else 'private ' 
             privates += classname + ' ' +  rname + ';\n'
             lookups += 'holder.' if adapter else '' 
+            if not private:
+                lookups += classname + ' '
             lookups += rname + ' = (' + classname + ') '
             lookups += view
             lookups += 'findViewById(R.id.' + rid + ');\n'
@@ -72,5 +77,6 @@ else:
     f = open(sys.argv[1],"r");
     p.ParseFile(f)
 
-    print privates
+    if private:
+        print privates
     print lookups
