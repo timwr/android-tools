@@ -12,16 +12,8 @@ if len(sys.argv) < 2:
     print "Usage " , sys.argv[0] , " layout.xml";
 else:
     adapter = False
-    private = True
-    view = ''
-    if len(sys.argv) > 2:
-        if sys.argv[2] == 'adapter':
-            view = 'convertView.'
-            adapter = True
-        else:
-            view = sys.argv[2] + '.'
-            if len(sys.argv) > 3:
-                private = False
+    if len(sys.argv) == 3:
+        adapter = True
 
     def start_element(name, attrs):
         global privates
@@ -31,10 +23,12 @@ else:
             classname = str(name)
             if classname == 'include' or classname == 'merge':
                 classname = 'View'
+            dotindex = classname.rfind('.')
+            if dotindex != -1:
+                classname = classname[dotindex+1:]
             rid = str(attrs.get('android:id'))
             rid = rid[rid.find('/')+1:]
-            rname = 'm' + classname
-            addname = ''
+            rname = ''
             foundunderscore = False
             for i, c in enumerate(rid):
                 if c == '_':
@@ -43,19 +37,16 @@ else:
                     foundunderscore = True
                     i += 1
                 elif foundunderscore:
-                    addname += c.upper()
+                    rname += c.upper()
                     foundunderscore = False
-                elif len(addname) > 0:
-                    addname += c
-            rname = rname + addname
+                else:
+                    rname += c
 
             privates += '' if adapter else 'private ' 
             privates += classname + ' ' +  rname + ';\n'
             lookups += 'holder.' if adapter else '' 
-            if not private:
-                lookups += classname + ' '
             lookups += rname + ' = (' + classname + ') '
-            lookups += view
+            lookups += 'convertView.' if adapter else ''
             lookups += 'findViewById(R.id.' + rid + ');\n'
             if classname == 'Button':
                 lookups += 'holder.' if adapter else '' 
@@ -77,6 +68,5 @@ else:
     f = open(sys.argv[1],"r");
     p.ParseFile(f)
 
-    if private:
-        print privates
+    print privates
     print lookups
