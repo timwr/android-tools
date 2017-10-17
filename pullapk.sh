@@ -6,7 +6,7 @@ if [[ $# -eq 0 ]] ; then
 fi
 
 PACKAGES=`adb shell pm list packages | grep "$@" | cut -d ':' -f2- `
-NUMPACKAGES=`echo $PACKAGES | tr -cd '\r' | wc -c`
+NUMPACKAGES=`echo $PACKAGES | wc -l`
 if [[ $NUMPACKAGES -le 0 ]]; then
     echo "No matching packages"
     exit 1
@@ -21,5 +21,5 @@ APKPATH=`adb shell pm path $PACKAGE | cut -d ':' -f2-`
 APKPATH="${APKPATH/$'\r'/}"
 COMMAND="adb pull $APKPATH $PACKAGE.apk"
 echo $COMMAND
-`$COMMAND`
+$COMMAND
 
